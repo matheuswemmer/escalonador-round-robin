@@ -2,7 +2,7 @@
 
 ## Grupo
 - Aluno 1: Matheus Wemmer
-- Aluno 2:
+- Aluno 2: Gabriel Soranzo Jardim 
 - Aluno 3:
 - Aluno 4:
 - Aluno 5:
