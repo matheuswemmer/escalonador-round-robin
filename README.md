@@ -6,7 +6,7 @@
 - Aluno 3: Nicolas Born
 - Aluno 4: Pedro Henrique dos Santos
 - Aluno 5: Cauã Reinaldo
-- Aluno 6:
+- Aluno 6: Ruancarlo Brum Lenzzi
 
 ## Linguagem utilizada
 Java
