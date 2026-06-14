@@ -69,7 +69,8 @@ public class App {
         PCB[] processos = inicializarProcessos(rnd);
         
         while (finalizados < totalProcessos) {
-        while (tempo < tempo + 1) {
+        int tempoMax = tempo + 1;
+            while (tempo < tempoMax) {
             verificarChegada(processos, tempo, filaAlta);
             if (!filaAlta.isEmpty()) {
                 PCB processoAtual = filaAlta.get(0);
