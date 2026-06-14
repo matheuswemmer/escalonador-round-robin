@@ -13,7 +13,7 @@ public class App {
     static String[] prioridade = new String[] {"ALTA", "BAIXA"};
     static String[] status = new String[] {"NOVO", "PRONTO", "EXECUTANDO", "BLOQUEADO", "FINALIZADO"};
 
-    static PCB[] InicializarProcessos(Random rnd ) {
+    static PCB[] inicializarProcessos(Random rnd ) {
         PCB[] processos =new PCB[totalProcessos];
         String tipoIO;
         int tempoIO = 0;
@@ -66,7 +66,7 @@ public class App {
         
 
         System.out.printf("[config] quantum = %d | processos = %d | seed = %d\n", quantum, totalProcessos, seed);
-        PCB[] processos = InicializarProcessos(rnd);
+        PCB[] processos = inicializarProcessos(rnd);
         
         while (finalizados < totalProcessos) {
         while (tempo < tempo + 1) {
@@ -91,21 +91,21 @@ public class App {
         String prioridade;
         String status;
         int tempoChegada;
-        int tempoServiço;
-        int tempoExecuçao;
+        int tempoServico;
+        int tempoExecucao;
         String tipoIO;
         int tempoIO;
         int pedidoIO;
         
-        public PCB(int pid, int ppid, String prioridade, String status, int tempoChegada, int tempoServiço,
+        public PCB(int pid, int ppid, String prioridade, String status, int tempoChegada, int tempoServico,
                 String tipoIO, int tempoIO, int pedidoIO) {
             this.pid = pid;
             this.ppid = ppid;
             this.prioridade = prioridade;
             this.status = status;
             this.tempoChegada = tempoChegada;
-            this.tempoServiço = tempoServiço;
-            this.tempoExecuçao = 0;
+            this.tempoServico = tempoServico;
+            this.tempoExecucao = 0;
             this.tipoIO = tipoIO;
             this.tempoIO = tempoIO;
             this.pedidoIO = pedidoIO;
