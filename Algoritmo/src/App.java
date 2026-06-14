@@ -70,7 +70,7 @@ public class App {
         
         while (finalizados < totalProcessos) {
         while (tempo < tempo + 1) {
-            verificarChegada(processos, tempo, null);
+            verificarChegada(processos, tempo, filaAlta);
             if (!filaAlta.isEmpty()) {
                 PCB processoAtual = filaAlta.get(0);
                 atualizarProcesso(processoAtual, tempo, filaAlta, filaBaixa, filaIO);
