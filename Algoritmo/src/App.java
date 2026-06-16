@@ -3,7 +3,7 @@ import java.util.Random;
 
 public class App {
 
-class PCB {
+static class PCB {
         int pid;
         int ppid;
         String prioridade;
@@ -18,7 +18,7 @@ class PCB {
 
 
         public PCB(int pid, int ppid, String prioridade, String status, int tempoChegada, int tempoServico,
-                String tipoIO, int tempoIO, int pedidoIO) {
+            String tipoIO, int tempoIO, int pedidoIO) {
             this.pid = pid;
             this.ppid = ppid;
             this.status = status;
@@ -38,12 +38,14 @@ class PCB {
     static int totalProcessos = 5;
     static int seed = 4576;
 
-    // Variáveis de controle
+    // Variáveis de controle do CPU
     static int minIO = 2;
     static int maxIO = 5;
     static int minCPU = 4;
     static int maxCPU = 10;
     static int finalizados = 0;
+    static int preempcoes = 0;
+    //
 
     static String[] tiposIO = new String[] {"IMPRESSORA", "DISCO", "FITA", "NENHUM"};
     static String[] prioridade = new String[] {"ALTA", "BAIXA"};
@@ -54,7 +56,7 @@ class PCB {
 }
 
     static PCB[] inicializarProcessos(Random rnd) {
-
+ 
         PCB[] processos = new PCB[totalProcessos];
         String tipoIO;
         
@@ -92,24 +94,28 @@ class PCB {
     }
 
     static void atualizarFila (int tempo,  ArrayList<PCB> filaAlta, ArrayList<PCB> filaBaixa, ArrayList<PCB> filaIO) {
+        
         PCB processo = !filaAlta.isEmpty() ? filaAlta.get(0) : !filaBaixa.isEmpty() ? filaBaixa.get(0) : null;
-
+    
         if (processo != null) {
             processo.status = status[2]; // Executando
+            String filaOrigem = filaAlta.contains(processo) ? "ALTA" : "BAIXA";
+            if (processo.tempoQuantum == 0) log(tempo, "CPU executa P" + processo.pid + " [fila " + filaOrigem + "]...");
             processo.tempoExecucao++;
+            processo.tempoServico--;
             processo.tempoQuantum++;
-            if (processo.tempoQuantum == 1) log(tempo, "CPU executa P" + processo.pid + " por " + Math.min((processo.tempoServico - processo.tempoExecucao + 1), quantum) + " unidades");
         } else return;
-
-        if (processo.tempoExecucao == processo.tempoServico){
+        // Finalizou
+        if (processo.tempoServico == 0){
             processo.status = status[4]; // Finalizado
             finalizados++;
             filaAlta.remove(processo);
             filaBaixa.remove(processo);
+            log(tempo, "P" + processo.pid + " finalizou");
             return; // processo finalizado nao deve ser avaliado para I/O ou preempcao
         }
-
-        if (processo.tempoExecucao == processo.pedidoIO) { 
+        
+        if (!processo.tipoIO.equals("NENHUM") && processo.tempoExecucao == processo.pedidoIO) { 
             processo.status = status[3]; // Bloqueado
             processo.tempoQuantum = 0;
             filaIO.add(processo);
@@ -124,12 +130,14 @@ class PCB {
                     filaBaixa.add(processo);
                     processo.tempoQuantum = 0;
                     processo.prioridade = prioridade[1];
-                    log(tempo+1, "P" + processo.pid + " sofreu preempcao -> fila BAIXA");
+                    preempcoes++;
+                    log(tempo, "P" + processo.pid + " sofreu preempcao -> fila BAIXA");
                 } else if(filaBaixa.contains(processo)) {
                     filaBaixa.remove(processo);
                     processo.tempoQuantum = 0;
                     filaBaixa.add(processo);
-                    log(tempo+1, "P" + processo.pid + " sofreu preempcao -> fila BAIXA");
+                    log(tempo, "P" + processo.pid + " sofreu preempcao -> fila BAIXA");
+                    preempcoes++;
                 }
             }
     }       
@@ -168,17 +176,13 @@ class PCB {
         PCB[] processos = inicializarProcessos(rnd);
 
 
-        
         while (finalizados < totalProcessos) {
-        int tempoMax = tempo + 1;
-            while (tempo < tempoMax) {
                 atualizarFilaIO(tempo, filaAlta, filaBaixa, filaIO);
                 verificarChegada(processos, tempo, filaAlta);
                 atualizarFila(tempo, filaAlta, filaBaixa, filaIO);
                 tempo++; 
-            }
         }
         
-        System.out.printf("[fim] Processos finalizados: %d/%d | tempo total: %d", finalizados, totalProcessos, tempo);
+        System.out.printf("[fim] Processos finalizados: %d/%d | tempo total: %d | preempcoes: %d", finalizados, totalProcessos, tempo, preempcoes);
         }
     }
