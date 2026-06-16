@@ -19,18 +19,62 @@ Java
 - Critério de geração dos processos:
 - Semente aleatória, se aplicável:
 
-## Como executar o projeto
-```bash
-# Execução tradicional da linguagem escolhida
-# Exemplo C:
-gcc src/*.c -o escalonador
-./escalonador
+## Como executar o projeto com Docker
 
-# Bônus Docker, se implementado:
-docker build -t so-escalonador-grupo-x .
-docker run --rm so-escalonador-grupo-x
+### Pré-requisitos
+
+Tenha o Docker instalado na máquina:
+
+```bash
+docker --version
 ```
 
+## 1. Clone o repositório
+
+```bash
+git clone https://github.com/matheuswemmer/escalonador-round-robin.git
+```
+
+Entre na pasta do projeto:
+
+```bash
+cd escalonador-round-robin
+```
+
+## 2. Crie a imagem Docker
+
+Na raiz do projeto (onde está o `Dockerfile`), execute:
+
+```bash
+docker build -t escalonador .
+```
+
+Esse comando irá:
+
+- Baixar a imagem base do Java
+- Copiar o código fonte para o container
+- Compilar o arquivo `App.java`
+- Criar uma imagem chamada `escalonador`
+
+## 3. Execute o programa
+
+```bash
+docker run --rm escalonador
+```
+
+O programa será executado dentro do container.
+
+## Estrutura do projeto
+
+```
+escalonador-round-robin/
+│
+├── Dockerfile
+│
+└── Algoritmo/
+    └── src/
+        └── App.java
+```
 ## O que aparece na saída
 Explique brevemente os eventos impressos pelo simulador.
 
