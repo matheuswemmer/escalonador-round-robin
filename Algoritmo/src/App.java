@@ -15,6 +15,8 @@ static class PCB {
         String tipoIO;
         int tempoIO;
         int pedidoIO;
+        int tempoEspera;
+        int tempoFinalizacao;
 
 
         public PCB(int pid, int ppid, String prioridade, String status, int tempoChegada, int tempoServico,
@@ -30,6 +32,8 @@ static class PCB {
             this.tipoIO = tipoIO;
             this.tempoIO = tempoIO;
             this.pedidoIO = pedidoIO;
+            this.tempoEspera = 0;
+            this.tempoFinalizacao = 0;
     }       
     }
         
@@ -45,7 +49,12 @@ static class PCB {
     static int maxCPU = 10;
     static int finalizados = 0;
     static int preempcoes = 0;
-    //
+    static PCB processoAtual = null;
+    static int ioImpressora = 0;
+    static int ioDisco = 0;
+    static int ioFita = 0;
+    static int ticksOciosos = 0;
+    
 
     static String[] tiposIO = new String[] {"IMPRESSORA", "DISCO", "FITA", "NENHUM"};
     static String[] prioridade = new String[] {"ALTA", "BAIXA"};
@@ -96,7 +105,12 @@ static class PCB {
     static void atualizarFila (int tempo,  ArrayList<PCB> filaAlta, ArrayList<PCB> filaBaixa, ArrayList<PCB> filaIO) {
         
         PCB processo = !filaAlta.isEmpty() ? filaAlta.get(0) : !filaBaixa.isEmpty() ? filaBaixa.get(0) : null;
-    
+        
+        if (processoAtual != null && processoAtual != processo) {
+                processoAtual.tempoQuantum = 0;
+            }
+            processoAtual = processo;
+        
         if (processo != null) {
             processo.status = status[2]; // Executando
             String filaOrigem = filaAlta.contains(processo) ? "ALTA" : "BAIXA";
@@ -104,13 +118,17 @@ static class PCB {
             processo.tempoExecucao++;
             processo.tempoServico--;
             processo.tempoQuantum++;
-        } else return;
+        } else {
+            ticksOciosos++;
+            return;
+        }
         // Finalizou
         if (processo.tempoServico == 0){
             processo.status = status[4]; // Finalizado
             finalizados++;
             filaAlta.remove(processo);
             filaBaixa.remove(processo);
+            processo.tempoFinalizacao = tempo;
             log(tempo, "P" + processo.pid + " finalizou");
             return; // processo finalizado nao deve ser avaliado para I/O ou preempcao
         }
@@ -149,10 +167,13 @@ static class PCB {
                     if (processo.tempoIO == 0){
                     processo.status = status[1]; // Pronto
                         if (processo.tipoIO.equals("DISCO")){
+                            ioDisco++;
                             processo.prioridade = prioridade[1];
                             filaBaixa.add(processo);
                             log(tempo, "P" + processo.pid + " retornou do " + processo.tipoIO + " -> fila " + (processo.prioridade.equals("BAIXA") ? "BAIXA" : "ALTA"));
                         } else {
+                            if (processo.tipoIO.equals("IMPRESSORA")) ioImpressora++;
+                            else if (processo.tipoIO.equals("FITA")) ioFita++;
                             processo.prioridade = prioridade[0];
                             filaAlta.add(processo);
                             log(tempo, "P" + processo.pid + " retornou do " + processo.tipoIO + " -> fila " + (processo.prioridade.equals("BAIXA") ? "BAIXA" : "ALTA"));
@@ -161,6 +182,18 @@ static class PCB {
                 } 
                 filaIO.removeIf(processo -> processo.tempoIO == 0);
                 return;
+        }
+    }
+    static void atualizarEspera(ArrayList<PCB> filaALta,ArrayList<PCB> filaBaixa){
+        for (PCB pcb : filaBaixa) {
+            if (pcb.status.equals(status[1])){
+                pcb.tempoEspera++;
+            }
+        }
+        for (PCB pcb : filaALta) {
+            if (pcb.status.equals(status[1])){
+                pcb.tempoEspera++;
+            }
         }
     }
 
@@ -179,10 +212,26 @@ static class PCB {
         while (finalizados < totalProcessos) {
                 atualizarFilaIO(tempo, filaAlta, filaBaixa, filaIO);
                 verificarChegada(processos, tempo, filaAlta);
+                atualizarEspera(filaAlta, filaBaixa);
                 atualizarFila(tempo, filaAlta, filaBaixa, filaIO);
                 tempo++; 
         }
+        double esperaMedia = 0;
+        double turnaroundMedio = 0;
+        for (PCB p : processos) {
+            esperaMedia += p.tempoEspera;
+            turnaroundMedio += (p.tempoFinalizacao - p.tempoChegada);
+        }
+        esperaMedia /= totalProcessos;
+        turnaroundMedio /= totalProcessos;
+
+        double percentualOcioso = (ticksOciosos * 100.0) / tempo;
+
+        System.out.printf("[fim] Processos finalizados: %d/%d | tempo total: %d | preempcoes: %d%n", finalizados, totalProcessos, tempo, preempcoes);
+        System.out.printf("[fim] I/O -> DISCO: %d | FITA: %d | IMPRESSORA: %d%n", ioDisco, ioFita, ioImpressora);
+        System.out.printf("[fim] Espera media: %.1f | Retorno medio: %.1f%n", esperaMedia, turnaroundMedio);
+        System.out.printf("[fim] CPU ociosa: %d ticks (%.1f%%)%n", ticksOciosos, percentualOcioso);
         
-        System.out.printf("[fim] Processos finalizados: %d/%d | tempo total: %d | preempcoes: %d", finalizados, totalProcessos, tempo, preempcoes);
+        System.out.printf("[fim] Processos finalizados: %d/%d | tempo total: %d | preempcoes: %d ", finalizados, totalProcessos, tempo, preempcoes);
         }
     }
