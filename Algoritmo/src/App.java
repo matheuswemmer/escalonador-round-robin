@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Random;
 
+public class App {
+
 class PCB {
         int pid;
         int ppid;
@@ -30,9 +32,7 @@ class PCB {
             this.pedidoIO = pedidoIO;
     }       
     }
-
-public class App {
-    
+        
     // variaveis de simulação
     static int quantum = 2;
     static int totalProcessos = 5;
