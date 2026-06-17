@@ -35,8 +35,7 @@ docker --version
 ## 1. Clone o repositório
 
 ```bash
-git clone [https://github.com/matheuswemmer/escalonador-round-robin.git](https://github.com/matheuswemmer/escalonador-round-robin.git)
-cd escalonador-round-robin
+git clone https://github.com/matheuswemmer/escalonador-round-robin.git
 ```
 
 Entre na pasta do projeto:
