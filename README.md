@@ -12,15 +12,25 @@
 Java
 
 ## Premissas do escalonador
-- Algoritmo:
-- Quantum:
-- Número máximo de processos:
-- Semente aleatória:
-- Tempos de CPU:
-- Tempos de I/O:
-- Critério de geração dos processos:
-- Regras de feedback:
+* **Algoritmo:** Round Robin com Feedback (2 Filas de Prioridade).
 
+* **Quantum:** Fixo em **2 ticks** de clock (`quantum = 2`).
+
+* **Número máximo de processos:** 5 processos simulados por execução (`totalProcessos = 5`).
+
+* **Semente aleatória (Seed):** Fixada em `4576` (`seed = 4576`) para garantir a consistência dos testes.
+
+* **Tempos de CPU (Burst):** Gerados aleatoriamente entre **4 e 10 ticks** por processo.
+
+* **Tempos de I/O:** Gerados aleatoriamente entre **2 e 5 ticks** por operação.
+
+* **Critério de geração dos processos:** Criados dinamicamente via objeto `Random` com tempos de chegada (`tempoChegada`) distribuídos aleatoriamente entre **1 e 10 ticks**.
+
+* **Regras de feedback:**
+  * Todo processo novo entra na **Fila ALTA**.
+  * Se estourar o quantum (2 ticks), sofre preempção e cai para a **Fila BAIXA**.
+  * Retornos de I/O de **DISCO** vão para a **Fila BAIXA**.
+  * Retornos de I/O de **FITA** ou **IMPRESSORA** ganham prioridade e vão para a **Fila ALTA**.
 
 ## Como executar o projeto com Docker
 
