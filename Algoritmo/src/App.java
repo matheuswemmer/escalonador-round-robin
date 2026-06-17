@@ -118,12 +118,14 @@ static class PCB {
                     filaBaixa.remove(processo);
                     processo.tempoQuantum = 0;
                     filaBaixa.add(processo);
+                    processo.status = status[1]; // Pronto
                     log(tempo, "P" + processo.pid + " sofreu preempcao -> fila BAIXA");
                     preempcoes++;
                 }
                 // depois da preempcao, reavalia quem assume a CPU nesta unidade de tempo
                 processo = !filaAlta.isEmpty() ? filaAlta.get(0) : !filaBaixa.isEmpty() ? filaBaixa.get(0) : null;
             }
+
 
         if (processo == null) {
             ticksOciosos++;
