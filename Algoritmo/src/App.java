@@ -185,7 +185,7 @@ static class PCB {
                             else if (processo.tipoIO.equals("FITA")) ioFita++;
                             processo.prioridade = prioridade[0];
                             filaAlta.add(processo);
-                            log(tempo, "P" + processo.pid + " retornou do " + processo.tipoIO + " -> fila " + (processo.prioridade.equals("BAIXA") ? "BAIXA" : "ALTA"));
+                            log(tempo, "P" + processo.pid + " retornou da " + processo.tipoIO + " -> fila " + (processo.prioridade.equals("BAIXA") ? "BAIXA" : "ALTA"));
                         }
                     }
                 } 
