@@ -152,9 +152,9 @@ static class PCB {
             finalizados++;
             filaAlta.remove(processo);
             filaBaixa.remove(processo);
-            processo.tempoFinalizacao = tempo;
-            log(tempo, "P" + processo.pid + " finalizado");
-            return; 
+            processo.tempoFinalizacao = tempo + 1;
+            log(tempo + 1, "P" + processo.pid + " finalizado");
+            return;
         }
 
         if (!processo.tipoIO.equals("NENHUM") && processo.tempoExecucao == processo.pedidoIO) { 
