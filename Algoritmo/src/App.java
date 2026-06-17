@@ -132,7 +132,6 @@ static class PCB {
             return;
         }
 
-        // qualquer processo que estava executando e perdeu a CPU para uma chegada/retorno em ALTA volta a PRONTO
         for (PCB pcb : filaAlta) {
             if (pcb != processo && pcb.status.equals(status[2])) pcb.status = status[1];
         }
@@ -148,7 +147,6 @@ static class PCB {
         processo.tempoServico--;
         processo.tempoQuantum++;
 
-        // Finalizou exatamente nesta unidade de tempo (checado logo apos a execucao, sem esperar o proximo tick)
         if (processo.tempoServico == 0) {
             processo.status = status[4]; // Finalizado
             finalizados++;
@@ -156,7 +154,7 @@ static class PCB {
             filaBaixa.remove(processo);
             processo.tempoFinalizacao = tempo;
             log(tempo, "P" + processo.pid + " finalizado");
-            return; // processo finalizado nao deve ser avaliado para I/O
+            return; 
         }
 
         if (!processo.tipoIO.equals("NENHUM") && processo.tempoExecucao == processo.pedidoIO) { 
@@ -194,7 +192,6 @@ static class PCB {
         }
     }
     static void atualizarEspera(ArrayList<PCB> filaAlta,ArrayList<PCB> filaBaixa){
-        // quem esta de fato na CPU nesta unidade de tempo, pela mesma regra de prioridade do escalonador
         PCB executando = !filaAlta.isEmpty() ? filaAlta.get(0) : !filaBaixa.isEmpty() ? filaBaixa.get(0) : null;
         for (PCB pcb : filaAlta) {
             if (pcb != executando) {
